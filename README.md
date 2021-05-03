@@ -1,2 +1,2 @@
 # RustDataModelling
- Exploring of different ways to model data in Rust
+ Exploration of different ways to model data with references in Rust
