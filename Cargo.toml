@@ -1,0 +1,7 @@
+[package]
+name = "rust_data_modelling"
+version = "0.1.0"
+authors = ["Jesper Nordenberg <jesper@nnl.se>"]
+edition = "2018"
+
+[dependencies]
