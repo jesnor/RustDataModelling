@@ -33,7 +33,6 @@ impl Clear for Player {
 type PlayerRef = &'static Player;
 
 struct Game {
-    // This is a simplification, the actual implementation has to handle player removal as well
     players: FixedVec<'static, Player>,
 }
 
