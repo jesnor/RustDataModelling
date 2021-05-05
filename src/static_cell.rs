@@ -1,4 +1,4 @@
-use crate::fixed_vec::{Clear, FixedVec};
+use crate::{cell_pool::CellPool, clear::Clear};
 
 use super::ref_set::RefSet;
 use std::cell::{Cell, RefCell};
@@ -33,32 +33,31 @@ impl Clear for Player {
 type PlayerRef = &'static Player;
 
 struct Game {
-    players: FixedVec<'static, Player>,
+    players: CellPool<Player>,
 }
 
 impl Game {
-    fn new(players: &'static [Player]) -> Self {
+    fn new(max_player_count: usize) -> Self {
         Self {
-            players: FixedVec::new(players),
+            players: CellPool::new(max_player_count),
         }
     }
 
-    fn create_player(&'static self, name: &str, health: i32) -> PlayerRef {
-        let p = &self.players.alloc();
+    fn create_player(&'static self, name: &str, health: i32) -> Result<PlayerRef, &'static str> {
+        let p = self.players.alloc()?;
         p.init(self, name, health);
-        p
+        Ok(p)
     }
 }
 
 type GameRef = &'static Game;
 
-pub fn run_game() {
-    let players = Box::leak(vec![Player::default(); 100].into_boxed_slice());
-    let game = Box::leak(Box::new(Game::new(players)));
+pub fn run_game() -> Result<(), &'static str> {
+    let game = Box::leak(Box::new(Game::new(100)));
 
-    let p1 = game.create_player("Eric", 10);
-    let p2 = game.create_player("Tom", 15);
-    let p3 = game.create_player("Carl", 17);
+    let p1 = game.create_player("Eric", 10)?;
+    let p2 = game.create_player("Tom", 15)?;
+    let p3 = game.create_player("Carl", 17)?;
 
     p1.make_friends(p2);
     p1.make_friends(p3);
@@ -68,4 +67,6 @@ pub fn run_game() {
     for x in p1.friends.iter() {
         println!("{}: {}", x.name.borrow(), x.health.get())
     }
+
+    Ok(())
 }

@@ -12,28 +12,28 @@ impl<'t, T> RefSet<'t, T> {
         }
     }
 
-    pub fn add(&self, v: &'t T) {
+    pub fn add(&self, v: &'t T) -> Result<(), &'static str> {
         for x in self.items.iter() {
             if x.get().is_none() {
                 x.set(Some(v));
-                return;
+                return Ok(());
             }
         }
 
-        panic!("Too many items!");
+        Err("Out of space!")
     }
 
-    pub fn remove(&self, v: &'t T) {
+    pub fn remove(&self, v: &'t T) -> Result<(), &'static str> {
         for x in self.items.iter() {
             if let Some(a) = x.get() {
                 if a as *const T == v as *const T {
                     x.set(None);
-                    return;
+                    return Ok(());
                 }
             }
         }
 
-        panic!("Item not in set!");
+        Err("Item not in set!")
     }
 
     pub fn iter(&self) -> impl Iterator<Item = &'t T> + '_ {

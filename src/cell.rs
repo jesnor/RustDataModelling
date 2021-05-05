@@ -1,5 +1,6 @@
+use crate::{cell_pool::CellPool, clear::Clear};
+
 use super::ref_set::RefSet;
-use crate::fixed_vec::{Clear, FixedVec};
 use std::cell::{Cell, RefCell};
 
 #[derive(Default, Clone)]
@@ -32,32 +33,31 @@ impl<'t> Clear for Player<'t> {
 type PlayerRef<'t> = &'t Player<'t>;
 
 struct Game<'t> {
-    players: FixedVec<'t, Player<'t>>,
+    players: CellPool<Player<'t>>,
 }
 
 impl<'t> Game<'t> {
-    fn new(players: &'t [Player<'t>]) -> Self {
+    fn new(max_player_count: usize) -> Self {
         Self {
-            players: FixedVec::new(players),
+            players: CellPool::new(max_player_count),
         }
     }
 
-    fn create_player(&'t self, name: &str, health: i32) -> PlayerRef<'t> {
-        let p = &self.players.alloc();
+    fn create_player(&'t self, name: &str, health: i32) -> Result<PlayerRef<'t>, &'static str> {
+        let p = self.players.alloc()?;
         p.init(self, name, health);
-        p
+        Ok(p)
     }
 }
 
 type GameRef<'t> = &'t Game<'t>;
 
-pub fn run_game() {
-    let players = vec![Player::default(); 100].into_boxed_slice();
-    let game = Game::new(&players);
+pub fn run_game() -> Result<(), &'static str> {
+    let game = Game::new(100);
 
-    let p1 = game.create_player("Eric", 10);
-    let p2 = game.create_player("Tom", 15);
-    let p3 = game.create_player("Carl", 17);
+    let p1 = game.create_player("Eric", 10)?;
+    let p2 = game.create_player("Tom", 15)?;
+    let p3 = game.create_player("Carl", 17)?;
 
     p1.make_friends(p2);
     p1.make_friends(p3);
@@ -67,4 +67,6 @@ pub fn run_game() {
     for x in p1.friends.iter() {
         println!("{}: {}", x.name.borrow(), x.health.get())
     }
+
+    Ok(())
 }

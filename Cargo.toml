@@ -5,3 +5,4 @@ authors = ["Jesper Nordenberg <jesper@nnl.se>"]
 edition = "2018"
 
 [dependencies]
+ghost-cell = "0.2.1"
