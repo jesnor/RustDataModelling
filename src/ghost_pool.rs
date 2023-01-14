@@ -1,6 +1,7 @@
-use ghost_cell::{GhostCell, GhostToken};
-
-use crate::cell_pool::CellPool;
+use crate::{
+    cell_pool::CellPool,
+    ghost_cell::{GhostCell, GhostToken},
+};
 
 struct GCell<'brand, T>(GhostCell<'brand, T>);
 

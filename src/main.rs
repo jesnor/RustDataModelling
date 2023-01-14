@@ -1,8 +1,12 @@
+use crate::ghost_thread::test;
+
 mod cell;
 mod cell_pool;
 mod clear;
+mod ghost_cell;
 mod ghost_pool;
 mod ghost_rc;
+mod ghost_thread;
 mod ptr;
 mod ref_cell;
 mod ref_count;
@@ -34,6 +38,8 @@ fn main() -> Result<(), &'static str> {
     println!("Ghost pool:");
     ghost_rc::run_game();
     println!();
+
+    test();
 
     Ok(())
 }

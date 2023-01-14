@@ -3,7 +3,7 @@ use std::{
     rc::{Rc, Weak},
 };
 
-use ghost_cell::{GhostCell, GhostToken};
+use crate::ghost_cell::{GhostCell, GhostToken};
 
 struct Ref<'brand, T>(Rc<GhostCell<'brand, T>>);
 
